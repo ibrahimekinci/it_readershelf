@@ -1,0 +1,133 @@
+/* 
+ * assets/css/style.css
+ * 
+ * Custom styles complementing Bootstrap 4.6 for ITReaderShelf.
+ */
+
+:root {
+    --dark-navy: #0F172A;
+    --medium-blue: #2563EB;
+    --gold: #F59E0B;
+    --off-white: #F8FAFC;
+    --med-dark-grey: #64748B;
+    --border-color: #E2E8F0;
+    --white: #FFFFFF;
+}
+
+body {
+    padding-top: 60px;
+    background-color: var(--off-white);
+    font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--med-dark-grey);
+}
+
+/* Cards & Interaction */
+.card {
+    background-color: var(--white);
+    border: 1px solid var(--border-color) !important;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08) !important;
+}
+
+.card-img-top {
+    object-fit: cover;
+}
+
+/* primary */
+.navbar.bg-dark {
+    background-color: var(--dark-navy) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-dark .navbar-brand,
+.navbar-dark .navbar-nav .nav-link {
+    color: var(--white) !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.text-dark,
+.card-title,
+.card-title a {
+    color: var(--dark-navy) !important;
+}
+
+/* Medium Blue Active States & Buttons */
+.list-group-item.active {
+    background-color: var(--medium-blue) !important;
+    border-color: var(--medium-blue) !important;
+    color: var(--white) !important;
+}
+
+.btn-primary {
+    background-color: var(--medium-blue) !important;
+    border-color: var(--medium-blue) !important;
+    color: var(--white) !important;
+}
+
+.btn-primary:hover {
+    background-color: #1D4ED8 !important;
+    /* Slightly darker shade on hover for depth */
+    border-color: #1D4ED8 !important;
+}
+
+.btn-outline-primary {
+    color: var(--medium-blue) !important;
+    border-color: var(--medium-blue) !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--medium-blue) !important;
+    color: var(--white) !important;
+}
+
+.nav-tabs .nav-link.active {
+    border-bottom: 3px solid var(--medium-blue) !important;
+    color: var(--medium-blue) !important;
+    background-color: transparent !important;
+}
+
+button[name="add_favorite"],
+a[title="Login to Favorite"] {
+    color: var(--medium-blue) !important;
+}
+
+/* Gold/Yellow Reviews */
+.text-warning {
+    color: var(--gold) !important;
+}
+
+/* Neutrals & Greys */
+.list-group-item:not(.active) {
+    color: var(--med-dark-grey);
+}
+
+.badge-secondary {
+    background-color: var(--border-color) !important;
+    color: var(--dark-navy) !important;
+}
+
+input::placeholder {
+    color: var(--med-dark-grey) !important;
+}
+
+/* Footer refinements */
+footer {
+    border-top: 5px solid var(--dark-navy);
+}
+
+/* Breadcrumb adjustments */
+.breadcrumb {
+    background-color: transparent;
+    padding-left: 0;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
