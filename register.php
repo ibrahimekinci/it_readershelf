@@ -8,6 +8,7 @@ if (isset($_SESSION['user_id'])) {
 require_once __DIR__ . '/includes/Constants.php';
 require_once __DIR__ . '/includes/db_connect.php';
 require_once __DIR__ . '/models/UserModel.php';
+require_once __DIR__ . '/includes/Logger.php';
 
 $error = '';
 
