@@ -1,15 +1,11 @@
-# Veritabanı bağlantı dosyası gizlenmeli
-includes/db_connect.php
+
 .env
 
-# MacOS Dosyaları
 .DS_Store
 
-# IDE ve Editörler
 .idea/
 .vscode/
 
-# Komposer varsayımları (sistem dışı)
 vendor/
 
 # Log Dosyaları
