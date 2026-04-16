@@ -3,10 +3,10 @@
 require_once __DIR__ . '/Logger.php';
 
 // config
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', 'root');
-define('DB_NAME', 'it_readershelf');
+define('DB_HOST', 'sql302.infinityfree.com');
+define('DB_USER', 'if0_41679371');
+define('DB_PASS', 'Af8fjQkc4blk');
+define('DB_NAME', 'if0_41679371_test');
 
 function getDatabaseConnection(): mysqli
 {

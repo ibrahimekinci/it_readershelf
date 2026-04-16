@@ -7,6 +7,13 @@
 
 We created IT ReaderShelf, a website where people can review IT books. We used tools like PHP, MySQL, Bootstrap and jQuery AJAX(will be implemented at v2) to build it. This website lets users look at IT books rate them with stars write reviews and make lists of their books.
 
+## Web site
+https://itreadershelf.gt.tc/index.php
+
+## On Github
+https://github.com/ibrahimekinci/it_readershelf
+
+
 ## How to Set Up the Project on Your Computer
 
 To run this project on your computer follow these steps:
