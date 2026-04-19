@@ -3,10 +3,16 @@
 require_once __DIR__ . '/Logger.php';
 
 // config
-define('DB_HOST', 'sql302.infinityfree.com');
-define('DB_USER', 'if0_41679371');
-define('DB_PASS', 'Af8fjQkc4blk');
-define('DB_NAME', 'if0_41679371_test');
+// define('DB_HOST', 'sql302.infinityfree.com');
+// define('DB_USER', 'if0_41679371');
+// define('DB_PASS', 'Af8fjQkc4blk');
+// define('DB_NAME', 'if0_41679371_test');
+
+define('DB_HOST', 'localhost');
+define('DB_USER', 'root');
+define('DB_PASS', '');
+define('DB_NAME', 'it_readershelf');
+
 
 function getDatabaseConnection(): mysqli
 {
@@ -21,8 +27,7 @@ function getDatabaseConnection(): mysqli
         $mysqli->set_charset("utf8mb4");
 
         return $mysqli;
-    }
-    catch (mysqli_sql_exception $e) {
+    } catch (mysqli_sql_exception $e) {
         // dev log
         Logger::error("Database Connection Failed", $e);
 

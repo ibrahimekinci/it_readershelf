@@ -2,6 +2,7 @@
 
 session_start();
 
+// Simple validation for the ID
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     header("Location: index.php");
     exit;
@@ -22,17 +23,19 @@ $error = '';
 $success = '';
 
 try {
-
     $userId = $_SESSION['user_id'] ?? 0;
     $book = $bookModel->getBookDetail($bookId, $userId);
+    
+    // Fallback if book doesn't exist
     if (!$book) {
         header("Location: index.php");
         exit;
     }
+
     $authors = $bookModel->getAuthorsForBook($bookId);
     $reviews = $reviewModel->getReviewsForBook($bookId);
 
-    // avg rating
+    // Calculate the average rating manually
     $totalRating = 0;
     $reviewCount = count($reviews);
     foreach ($reviews as $rev) {
@@ -40,42 +43,11 @@ try {
     }
     $avgRating = $reviewCount > 0 ? ($totalRating / $reviewCount) : 0;
 
-}
-catch (Exception $e) {
-    $error = "Error loading book details.";
+} catch (Exception $e) {
+    $error = "We had some trouble loading the book details.";
 }
 
-// user review
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_review'])) {
-    if (!isset($_SESSION['user_id'])) {
-        $error = "You must be logged in to submit a review.";
-    }
-    else {
-        $rating = (int)($_POST['rating'] ?? 0);
-        $reviewText = trim($_POST['review_text'] ?? '');
-
-        if ($rating < 1 || $rating > 5) {
-            $error = "Please provide a valid rating between 1 and 5.";
-        }
-        else {
-            try {
-                $reviewModel->create([
-                    'user_id' => $_SESSION['user_id'],
-                    'book_id' => $bookId,
-                    'rating' => $rating,
-                    'review_text' => $reviewText
-                ]);
-
-                $_SESSION['flash_success'] = "Your review was successfully added.";
-                header("Location: book_detail.php?id=$bookId");
-                exit;
-            }
-            catch (Exception $e) {
-                $error = "Failed to submit review. You may have already reviewed this book.";
-            }
-        }
-    }
-}
+// NOTE: Review submission is now handled via AJAX (see assets/js/ajax_reviews.js)
 
 $pageTitle = $book['title'] ?? 'Book Details';
 $breadcrumbs = [
@@ -84,6 +56,7 @@ $breadcrumbs = [
     ['label' => htmlspecialchars($book['category_name'] ?? 'Uncategorized', ENT_QUOTES, 'UTF-8'), 'url' => 'index.php?category=' . $book['category_id']],
     ['label' => htmlspecialchars($book['title'], ENT_QUOTES, 'UTF-8'), 'url' => '#', 'active' => true]
 ];
+
 require_once __DIR__ . '/includes/header.php';
 ?>
 
@@ -94,19 +67,17 @@ require_once __DIR__ . '/includes/header.php';
             <?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8')?>
         </div>
     </div>
-    <?php
-endif; ?>
+    <?php endif; ?>
+
     <?php if (isset($_SESSION['flash_success'])): ?>
     <div class="col-12">
         <div class="alert alert-success shadow-sm">
             <?= htmlspecialchars($_SESSION['flash_success'], ENT_QUOTES, 'UTF-8')?>
         </div>
     </div>
-    <?php unset($_SESSION['flash_success']); ?>
-    <?php
-endif; ?>
+    <?php unset($_SESSION['flash_success']); endif; ?>
 
-    <!-- cover & rating -->
+    <!-- Cover Image & Rating Summary -->
     <div class="col-md-4 mb-4 text-center">
         <?php $cover = !empty($book['cover_image_url']) ? htmlspecialchars($book['cover_image_url'], ENT_QUOTES, 'UTF-8') : 'https://via.placeholder.com/400x600?text=No+Cover'; ?>
         <img src="<?= $cover?>" class="img-fluid rounded shadow mb-3" alt="Cover"
@@ -118,41 +89,22 @@ endif; ?>
                     <?= str_repeat('★', round($avgRating)) . str_repeat('☆', 5 - round($avgRating))?>
                 </h4>
                 <p class="text-muted small font-weight-bold mb-0">
-                    <?= number_format($avgRating, 1)?> Average Rating &middot;
+                    <?= number_format($avgRating, 1)?> Avg Rating &middot;
                     <?= $reviewCount?> Reviews
                 </p>
             </div>
         </div>
 
         <?php if (!isset($_SESSION['user_id'])): ?>
-        <a href="login.php" class="btn btn-outline-primary btn-block font-weight-bold shadow-sm py-2">🤍 Login to Add
-            Favourite</a>
-        <?php
-else: ?>
-        <?php if (!empty($book['is_favorited'])): ?>
-        <form action="favorites.php" method="POST">
-            <input type="hidden" name="book_id" value="<?= $bookId?>">
-            <button type="submit" name="remove_favorite"
-                class="btn btn-outline-danger btn-block font-weight-bold shadow-sm py-2">
-                ❤️ Remove from Favourites
-            </button>
-        </form>
-        <?php
-    else: ?>
-        <form action="favorites.php" method="POST">
-            <input type="hidden" name="book_id" value="<?= $bookId?>">
-            <button type="submit" name="add_favorite"
-                class="btn btn-outline-primary btn-block font-weight-bold shadow-sm py-2">
-                🤍 Add to Favourites
-            </button>
-        </form>
-        <?php
-    endif; ?>
-        <?php
-endif; ?>
+        <a href="login.php" class="btn btn-outline-primary btn-block font-weight-bold shadow-sm py-2">🤍 Login to Add Favourite</a>
+        <?php else: ?>
+        <button type="button" class="fav-btn btn <?= !empty($book['is_favorited']) ? 'btn-outline-danger' : 'btn-outline-primary' ?> btn-block font-weight-bold shadow-sm py-2" data-book-id="<?= $bookId?>">
+            <?= !empty($book['is_favorited']) ? '❤️ Remove from Favourites' : '🤍 Add to Favourites' ?>
+        </button>
+        <?php endif; ?>
     </div>
 
-    <!-- info -->
+    <!-- Main Content -->
     <div class="col-md-8">
         <h2 class="font-weight-bold mb-2 text-dark">
             <?= htmlspecialchars($book['title'], ENT_QUOTES, 'UTF-8')?>
@@ -161,13 +113,10 @@ endif; ?>
         <h5 class="text-muted mb-3 pb-3 border-bottom">
             By
             <?php if (!empty($authors)): ?>
-            <?= implode(', ', array_map(function ($a) {
-        return htmlspecialchars($a['full_name'], ENT_QUOTES, 'UTF-8'); }, $authors))?>
-            <?php
-else: ?>
-            Unknown Author
-            <?php
-endif; ?>
+                <?= implode(', ', array_map(function ($a) { return htmlspecialchars($a['full_name'], ENT_QUOTES, 'UTF-8'); }, $authors))?>
+            <?php else: ?>
+                Unknown Author
+            <?php endif; ?>
         </h5>
 
         <div class="row mb-4">
@@ -179,15 +128,11 @@ endif; ?>
             </div>
             <div class="col-md-4">
                 <p class="mb-1 text-muted small text-uppercase font-weight-bold">Publication Year</p>
-                <p class="font-weight-bold">
-                    <?=(int)$book['publication_year']?>
-                </p>
+                <p class="font-weight-bold"><?=(int)$book['publication_year']?></p>
             </div>
             <div class="col-md-4">
                 <p class="mb-1 text-muted small text-uppercase font-weight-bold">ISBN</p>
-                <p class="font-weight-bold">
-                    <?= htmlspecialchars($book['isbn'] ?? 'N/A', ENT_QUOTES, 'UTF-8')?>
-                </p>
+                <p class="font-weight-bold"><?= htmlspecialchars($book['isbn'] ?? 'N/A', ENT_QUOTES, 'UTF-8')?></p>
             </div>
         </div>
 
@@ -201,19 +146,19 @@ endif; ?>
 
 <hr class="my-5">
 
-<!-- reviews -->
+<!-- Community Reviews Section -->
 <div class="row justify-content-center">
     <div class="col-md-10">
         <h4 class="font-weight-bold mb-4 text-center">Community Reviews</h4>
 
-        <!-- review form -->
+        <!-- Review Form -->
         <div class="card shadow-sm border-0 mb-5">
             <div class="card-header bg-primary text-white font-weight-bold">
                 Leave a Review
             </div>
             <div class="card-body p-4 bg-light">
                 <?php if (isset($_SESSION['user_id'])): ?>
-                <form action="book_detail.php?id=<?= $bookId?>" method="POST">
+                <form id="review-form" data-book-id="<?= $bookId?>">
                     <div class="form-group">
                         <label class="font-weight-bold text-secondary">Star Rating</label>
                         <select name="rating" class="form-control custom-select w-25 shadow-sm" required>
@@ -229,55 +174,45 @@ endif; ?>
                         <textarea name="review_text" class="form-control shadow-sm border-0" rows="4"
                             placeholder="Share your thoughts about this book..." required></textarea>
                     </div>
-                    <button type="submit" name="submit_review"
-                        class="btn btn-primary font-weight-bold shadow-sm px-4">Submit Review</button>
+                    <button type="submit" class="btn btn-primary font-weight-bold shadow-sm px-4">Submit Review</button>
                 </form>
-                <?php
-else: ?>
+                <?php else: ?>
                 <div class="text-center py-4">
                     <p class="text-muted">Please log in or sign up to leave a review for this book.</p>
                     <a href="login.php" class="btn btn-primary shadow-sm font-weight-bold">Login to Review</a>
                 </div>
-                <?php
-endif; ?>
+                <?php endif; ?>
             </div>
         </div>
 
-        <!-- comments -->
+        <!-- Review List Container -->
+        <div id="review-list">
         <?php if (empty($reviews)): ?>
-        <div class="alert alert-secondary text-center border-0 shadow-sm py-4">
-            No reviews yet. Be the first to share your thoughts!
-        </div>
-        <?php
-else: ?>
-        <div class="list-group shadow-sm">
-            <?php foreach ($reviews as $review): ?>
-            <div class="list-group-item list-group-item-action border-0 mb-2 rounded pt-4 pb-4">
-                <div class="d-flex w-100 justify-content-between align-items-center mb-2">
-                    <h6 class="mb-0 font-weight-bold text-primary">
-
-                        <span class="badge badge-pill badge-primary mr-2" style="font-size: 1.1em;">👤</span>
-                        <?= htmlspecialchars($review['reviewer_name'], ENT_QUOTES, 'UTF-8')?>
-                    </h6>
-                    <small class="text-muted font-italic">
-                        <?= date('M j, Y', strtotime($review['created_at']))?>
-                    </small>
-                </div>
-                <div class="mb-2 text-warning" style="font-size: 1.2rem;">
-                    <?php
-        $r = (int)$review['rating'];
-        echo str_repeat('★', $r) . str_repeat('☆', 5 - $r);
-?>
-                </div>
-                <p class="mb-0 text-muted" style="line-height: 1.6;">
-                    <?= nl2br(htmlspecialchars($review['review_text'], ENT_QUOTES, 'UTF-8'))?>
-                </p>
+            <div class="alert alert-secondary text-center border-0 shadow-sm py-4">
+                No reviews yet. Be the first to share your thoughts!
             </div>
-            <?php
-    endforeach; ?>
+        <?php else: ?>
+            <div class="list-group shadow-sm">
+                <?php foreach ($reviews as $review): ?>
+                <div class="list-group-item list-group-item-action border-0 mb-2 rounded pt-4 pb-4">
+                    <div class="d-flex w-100 justify-content-between align-items-center mb-2">
+                        <h6 class="mb-0 font-weight-bold text-primary">
+                            <span class="badge badge-pill badge-primary mr-2" style="font-size: 1.1em;">👤</span>
+                            <?= htmlspecialchars($review['reviewer_name'], ENT_QUOTES, 'UTF-8')?>
+                        </h6>
+                        <small class="text-muted font-italic"><?= date('M j, Y', strtotime($review['created_at']))?></small>
+                    </div>
+                    <div class="mb-2 text-warning" style="font-size: 1.2rem;">
+                        <?= str_repeat('★', (int)$review['rating']) . str_repeat('☆', 5 - (int)$review['rating']); ?>
+                    </div>
+                    <p class="mb-0 text-muted" style="line-height: 1.6;">
+                        <?= nl2br(htmlspecialchars($review['review_text'], ENT_QUOTES, 'UTF-8'))?>
+                    </p>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
         </div>
-        <?php
-endif; ?>
     </div>
 </div>
 

@@ -122,16 +122,11 @@ else: ?>
             <?php foreach ($favData['books'] as $fav): ?>
             <div class="col-md-6 mb-4">
                 <div class="card h-100 shadow-sm border-0 position-relative">
-                    <form action="favorites.php" method="POST" class="position-absolute"
-                        style="top: 10px; right: 10px; z-index: 10;">
-                        <input type="hidden" name="book_id" value="<?=(int)$fav['book_id']?>">
-                        <button type="submit" name="remove_favorite"
-                            class="btn btn-light btn-sm rounded-circle shadow-sm text-danger"
-                            title="Remove from Favorites"
-                            style="width: 35px; height: 35px; padding: 0; line-height: 33px; font-size: 1.2rem;">
-                            ❤️
-                        </button>
-                    </form>
+                    <button type="button" class="fav-btn position-absolute btn btn-light btn-sm rounded-circle shadow-sm text-danger"
+                        data-book-id="<?=(int)$fav['book_id']?>" title="Remove from Favorites"
+                        style="top: 10px; right: 10px; z-index: 10; width: 35px; height: 35px; padding: 0; line-height: 33px; font-size: 1.2rem;">
+                        ❤️
+                    </button>
                     <div class="row no-gutters">
                         <div class="col-4">
                             <?php $cover = !empty($fav['cover_image_url']) ? htmlspecialchars($fav['cover_image_url'], ENT_QUOTES, 'UTF-8') : 'https://via.placeholder.com/150'; ?>

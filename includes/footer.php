@@ -52,6 +52,8 @@ endif; ?>
 
 <!-- core js -->
 <script src="assets/js/app.js"></script>
+<script src="assets/js/ajax_favorites.js"></script>
+<script src="assets/js/ajax_reviews.js"></script>
 
 </body>
 

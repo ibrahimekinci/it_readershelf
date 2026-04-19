@@ -46,13 +46,10 @@ You might need to update the database login details so the PHP application can c
 
 ```php
 
-$server = "localhost";
-
-$username = "root";
-
-$password = "";
-
-$database = "it_readershelf";
+define('DB_HOST', 'localhost');
+define('DB_USER', 'root');
+define('DB_PASS', '');
+define('DB_NAME', 'it_readershelf');
 
 ```
 
@@ -60,13 +57,11 @@ $database = "it_readershelf";
 
 ```php
 
-$server = "localhost";
 
-$username = "root";
-
-$password = "root";
-
-$database = "it_readershelf";
+define('DB_HOST', 'localhost');
+define('DB_USER', 'root');
+define('DB_PASS', 'root');
+define('DB_NAME', 'it_readershelf');
 
 ```
 

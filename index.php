@@ -107,30 +107,18 @@ else: ?>
                     <?php
         else: ?>
                     <?php if (!empty($book['is_favorited'])): ?>
-                    <form action="favorites.php" method="POST" class="position-absolute"
-                        style="top: 10px; right: 10px; z-index: 10;">
-                        <input type="hidden" name="book_id" value="<?= $book['id']?>">
-                        <button type="submit" name="remove_favorite"
-                            class="btn btn-light btn-sm rounded-circle shadow-sm text-danger"
-                            title="Remove from Favorites"
-                            style="width: 35px; height: 35px; padding: 0; line-height: 33px; font-size: 1.2rem;">
-                            ❤️
-                        </button>
-                    </form>
-                    <?php
-            else: ?>
-                    <form action="favorites.php" method="POST" class="position-absolute"
-                        style="top: 10px; right: 10px; z-index: 10;">
-                        <input type="hidden" name="book_id" value="<?= $book['id']?>">
-                        <button type="submit" name="add_favorite"
-                            class="btn btn-light btn-sm rounded-circle shadow-sm text-secondary"
-                            title="Add to Favorites"
-                            style="width: 35px; height: 35px; padding: 0; line-height: 33px; font-size: 1.2rem;">
-                            🤍
-                        </button>
-                    </form>
-                    <?php
-            endif; ?>
+                    <button type="button" class="fav-btn position-absolute btn btn-light btn-sm rounded-circle shadow-sm text-danger"
+                        data-book-id="<?= $book['id']?>" title="Remove from Favorites"
+                        style="top: 10px; right: 10px; z-index: 10; width: 35px; height: 35px; padding: 0; line-height: 33px; font-size: 1.2rem;">
+                        ❤️
+                    </button>
+                    <?php else: ?>
+                    <button type="button" class="fav-btn position-absolute btn btn-light btn-sm rounded-circle shadow-sm text-secondary"
+                        data-book-id="<?= $book['id']?>" title="Add to Favorites"
+                        style="top: 10px; right: 10px; z-index: 10; width: 35px; height: 35px; padding: 0; line-height: 33px; font-size: 1.2rem;">
+                        🤍
+                    </button>
+                    <?php endif; ?>
                     <?php
         endif; ?>
 
